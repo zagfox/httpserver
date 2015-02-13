@@ -47,11 +47,10 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
     int fsize;
     char file_name[256];
     genFileName(req.reqLoc, file_name, 256);
-    printf("file:%s\n", file_name);
 
     struct HttpReplyHeader replyHeader;
     replyHeader.version = v1_1;
-    if ((fsize = fileExist(req.reqLoc)) == -1) {
+    if ((fsize = fileExist(file_name)) == -1) {
         replyHeader.retCode = 404;
         replyHeader.retMsg = NOT_FOUND;
         replyHeader.contentType = TEXT_HTML;
@@ -88,14 +87,6 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
         break;
 
     }
-
-            
-      /*
-      char ret[] = "HTTP/1.1 404 NotFound    \r\nContent-Type: text/html   \r\n\r\n<html><body>request file not found</body></html>";
-      *msg_size = sizeof(ret)/sizeof(ret[0]);
-      *msg_ptr = (char*) malloc(*msg_size);
-      memcpy(*msg_ptr, ret, *msg_size);
-      */
 }
 
 void handleSent(char **msg_ptr, int* msg_size) {

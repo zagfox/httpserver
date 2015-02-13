@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <sys/stat.h>
 
-char home[] = "/Users/fengzhu/coding/cse124/web/cseweb.ucsd.edu/f7zhu";
+char home[] = "/home/zagfox/cse124/web";
 
 void genFileName(char path[], char file[], int file_size) {
     if (strlen(path) == 1 && path[0] == '/') {
@@ -16,19 +17,14 @@ void genFileName(char path[], char file[], int file_size) {
  */
 int fileExist(char fname[]) {
     FILE *fp;
-    if (0 != (fp = fopen(fname, "r"))){//, "rb"))) {
-        printf("file found\n");
-        fseek(fp, 0L, SEEK_END);
-        int size = ftell(fp);
-        printf("file size %d\n", size);
-        fseek(fp, 0L, SEEK_SET);
-        /*struct stat st;
-        fstat(fd, &buf);*/
-        fclose(fp);
-        return size;
-    }
-    printf("file not found\n");
-    return -1;
+	printf("%s\n", fname);
+	struct stat st;
+	if (-1 == stat(fname, &st)) {
+		printf("file stat error\n");
+		return -1;
+	}
+	int size = st.st_size;
+	return size;
 }
 
 int loadFile(void *dst, char fname[], int fsize) {

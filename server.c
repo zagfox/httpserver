@@ -43,39 +43,39 @@ int main(int argc, char *argv[]) {
           exit(1);
         }
 
-        //has problem with this fork
-        //if (fork() == 0) {
+		int pid = fork();
+        if (pid == -1) {
+			perror("fail to fork");
+		} else if (pid == 0) {
             char buf[BUFSIZ];
             ssize_t bytes_read = 0;
             ssize_t bytes_sent = 0;
             char *msg = 0;
             int msg_size = 0;
 
-            //do {
-                bytes_read = recv(csock, &buf, sizeof(buf)-1, 0);
-                if (bytes_read < 0) {
-                    perror("recv failed");
-                    exit(1);
-                }
+			bytes_read = recv(csock, &buf, sizeof(buf)-1, 0);
+			if (bytes_read < 0) {
+				perror("recv failed");
+				exit(1);
+			}
 
-                printf("data recv:\n%s\n", buf);
-                handleRecv(buf, sizeof(buf), &msg, &msg_size);
+			printf("data recv:\n%s\n", buf);
+			handleRecv(buf, sizeof(buf), &msg, &msg_size);
 
-                if (msg_size != 0) {
-                  bytes_sent = send(csock, msg, msg_size, 0);
-                  printf("data send: %d | %s\n", msg_size, msg);
+			if (msg_size != 0) {
+			  bytes_sent = send(csock, msg, msg_size, 0);
+			  printf("data send: %d | %s\n", msg_size, msg);
 
-                  if (bytes_sent < 0) {
-                      perror("sent failed");
-                  } 
-                }  
-                handleSent(&msg, &msg_size);
-
-            //} while (bytes_read > 0 && bytes_sent >= 0);
-
+			  if (bytes_sent < 0) {
+				  perror("sent failed");
+			  } 
+			}  
+			handleSent(&msg, &msg_size);
             close(csock);
-            //exit(0);
-        //}
+			exit(0);
+        } else {
+            close(csock);
+		}
 
     }
     close(sock);

@@ -1,4 +1,7 @@
 CC=gcc
+FLAGS="-std=c99"
 
 all:
-	CC server.c
+	${CC} ${FLAGS} server.c
+clean:
+	rm a.out
