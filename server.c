@@ -2,12 +2,19 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <signal.h>
+#include <sys/wait.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
 #include "handleHttp.c"
 
+void waitChildren(int signo) {
+	int status;
+	while (waitpid(-1, &status, WNOHANG) > 0);
+}
 
 /*
  * arg0 func name (default)
@@ -16,12 +23,16 @@
 int main(int argc, char *argv[]) {
     if (argc != 2)
         exit(1);
+	
     int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
     struct sockaddr_in address = {0};
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(atoi(argv[1]));
+
+	int opt = 1;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     if (bind(sock, (struct sockaddr*) &address, sizeof(address)) < 0) {
         perror("bind failed");
@@ -33,6 +44,11 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+	// handling zombie process
+	//signal(SIGCHLD, waitChildren);
+	signal(SIGCHLD, SIG_IGN);
+
+	// hanlding request client socket
     while (1) {
         struct sockaddr_in client_address = {0};
         socklen_t ca_len = 0;
