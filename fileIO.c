@@ -15,13 +15,16 @@ void genFileName(char path[], char file[], int file_size) {
  * otherwise, return -1
  */
 int fileExist(char fname[]) {
-    FILE *file;
-    if (0 != (file = fopen(fname, "rb"))) {
+    FILE *fp;
+    if (0 != (fp = fopen(fname, "r"))){//, "rb"))) {
         printf("file found\n");
-        fseek(file, 0, SEEK_END);
-        int size = ftell(file);
-        fseek(file, 0, SEEK_SET);
-        fclose(file);
+        fseek(fp, 0L, SEEK_END);
+        int size = ftell(fp);
+        printf("file size %d\n", size);
+        fseek(fp, 0L, SEEK_SET);
+        /*struct stat st;
+        fstat(fd, &buf);*/
+        fclose(fp);
         return size;
     }
     printf("file not found\n");
