@@ -1,16 +1,6 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-char home[] = "/home/zagfox/cse124/web";
-
-void genFileName(char path[], char file[], int file_size) {
-    if (strlen(path) == 1 && path[0] == '/') {
-        snprintf(file, file_size, "%s%s", home, "/index.html");
-    } else {
-        snprintf(file, file_size, "%s%s", home, path);
-    }
-}
-
 /*
  * if file exist, return file size
  * otherwise, return -1
