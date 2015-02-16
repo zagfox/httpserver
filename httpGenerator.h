@@ -30,10 +30,14 @@ int genHeader(struct HttpReplyHeader *hdr, char *hbuf, int hbuf_size) {
         return -1;
     }
 
-    switch (hdr->contentType) {
+    switch (hdr->contType) {
     case TEXT_HTML:
-        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpContentType_TEXT_HTML);
-        pos += strlen(str_httpContentType_TEXT_HTML);
+        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpContType_TEXT_HTML);
+        pos += strlen(str_httpContType_TEXT_HTML);
+        break;
+    case IMG_JPEG:
+        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpContType_IMG_JPEG);
+        pos += strlen(str_httpContType_IMG_JPEG);
         break;
     default:    
         return -1;

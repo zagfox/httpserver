@@ -17,16 +17,16 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
 		printf("badrequest: %s %d\n", buf, size);
         replyHeader.retCode = 400;
         replyHeader.retMsg = BAD_REQUEST;
-        replyHeader.contentType = TEXT_HTML;
+        replyHeader.contType = TEXT_HTML;
     } else {
 		if ((fsize = fileExist(req.reqLoc)) == -1) {
 			replyHeader.retCode = 404;
 			replyHeader.retMsg = NOT_FOUND;
-			replyHeader.contentType = TEXT_HTML;
+			replyHeader.contType = TEXT_HTML;
 		} else {
 			replyHeader.retCode = 200;
 			replyHeader.retMsg = OK;
-			replyHeader.contentType = TEXT_HTML;
+			replyHeader.contType = req.contType;
 		}
 	}
 

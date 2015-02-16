@@ -8,7 +8,11 @@ void getFileNameType(char path[], int size, struct HttpReq *req) {
     } else {
         snprintf(req->reqLoc, (sizeof home) + size, "%s%s", home, path);
     }
-	req->contType = TEXT;
+	req->contType = TEXT_HTML;
+	if (size >= 4) {
+	  	if (strncmp(".jpg", path+size-4, 4) == 0) 
+			req->contType = IMG_JPEG;
+	}
 }
 
 /*

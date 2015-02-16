@@ -5,10 +5,9 @@
 
 /* several enum */
 typedef enum {GET} httpReqType;
-typedef enum {TEXT, JPEG} httpContType;
 typedef enum {v1_1} httpVersion;
 typedef enum {OK, BAD_REQUEST, NOT_FOUND}   httpRetMsg;
-typedef enum {TEXT_HTML} httpContentType;
+typedef enum {TEXT_HTML, IMG_JPEG} httpContType;
 
 /* struct */
 struct HttpReq {
@@ -21,7 +20,7 @@ struct HttpReplyHeader {
     httpVersion version;
     int retCode;
     httpRetMsg retMsg;
-    httpContentType contentType;
+    httpContType contType;
 };
 
 /* string */
@@ -31,7 +30,8 @@ char str_httpRetMsg_OK[] = "200 OK\r\n";
 char str_httpRetMsg_BAD_REQUEST[] = "400 Bad Request\r\n";
 char str_httpRetMsg_NOT_FOUND[] = "404 Not Found\r\n";
 
-char str_httpContentType_TEXT_HTML[] = "Content-Type: text/html\r\n";
+char str_httpContType_TEXT_HTML[] = "Content-Type: text/html\r\n";
+char str_httpContType_IMG_JPEG[] = "Content-Type: img/jpeg\r\n";
 
 /* related to file parser */
 const char home[] = "/home/zagfox/cse124/web";
