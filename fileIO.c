@@ -17,10 +17,9 @@ void genFileName(char path[], char file[], int file_size) {
  */
 int fileExist(char fname[]) {
     FILE *fp;
-	printf("%s\n", fname);
 	struct stat st;
 	if (-1 == stat(fname, &st)) {
-		printf("file stat error\n");
+		perror("file stat error\n");
 		return -1;
 	}
 	int size = st.st_size;

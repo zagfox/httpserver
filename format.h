@@ -7,7 +7,7 @@ struct HttpReq {
 };
 
 typedef enum {v1_1} httpVersion;
-typedef enum {OK, NOT_FOUND}   httpRetMsg;
+typedef enum {OK, BAD_REQUEST, NOT_FOUND}   httpRetMsg;
 typedef enum {TEXT_HTML} httpContentType;
 struct HttpReplyHeader {
     httpVersion version;
@@ -19,6 +19,7 @@ struct HttpReplyHeader {
 char str_httpVersion_v1_1[] = "HTTP/1.1";
 
 char str_httpRetMsg_OK[] = "200 OK\r\n";
+char str_httpRetMsg_BAD_REQUEST[] = "400 Bad Request\r\n";
 char str_httpRetMsg_NOT_FOUND[] = "404 Not Found\r\n";
 
 char str_httpContentType_TEXT_HTML[] = "Content-Type: text/html\r\n";
@@ -40,6 +41,10 @@ int genHeader(struct HttpReplyHeader *hdr, char *hbuf, int hbuf_size) {
     case OK:
         snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpRetMsg_OK);
         pos += strlen(str_httpRetMsg_OK);
+        break;
+    case BAD_REQUEST:
+        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpRetMsg_BAD_REQUEST);
+        pos += strlen(str_httpRetMsg_BAD_REQUEST);
         break;
     case NOT_FOUND:
         snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpRetMsg_NOT_FOUND);

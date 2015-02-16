@@ -21,8 +21,10 @@ void waitChildren(int signo) {
  * arg1 socket port
  */
 int main(int argc, char *argv[]) {
-    if (argc != 2)
+    if (argc != 2) {
+		printf("usage: ./a.out port\n");
         exit(1);
+	}
 	
     int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -63,7 +65,9 @@ int main(int argc, char *argv[]) {
         if (pid == -1) {
 			perror("fail to fork");
 		} else if (pid == 0) {
+		//while (1) {
             char buf[BUFSIZ];
+			memset(buf, 0, BUFSIZ);
             ssize_t bytes_read = 0;
             ssize_t bytes_sent = 0;
             char *msg = 0;
@@ -73,20 +77,24 @@ int main(int argc, char *argv[]) {
 			if (bytes_read < 0) {
 				perror("recv failed");
 				exit(1);
-			}
+			} /*else if (bytes_read == 0) {
+				printf("the other side has been closed\n");
+				break;
+			}*/
 
-			printf("data recv:\n%s\n", buf);
-			handleRecv(buf, sizeof(buf), &msg, &msg_size);
+			//printf("bytes_read: %lu | %s\n", bytes_read, buf);
+			handleRecv(buf, bytes_read, &msg, &msg_size);
 
 			if (msg_size != 0) {
 			  bytes_sent = send(csock, msg, msg_size, 0);
-			  printf("data send: %d | %s\n", msg_size, msg);
+			  //printf("data send: %lu %d | %s\n", bytes_sent, msg_size, msg);
 
 			  if (bytes_sent < 0) {
 				  perror("sent failed");
 			  } 
 			}  
 			handleSent(&msg, &msg_size);
+		//}
             close(csock);
 			exit(0);
         } else {
