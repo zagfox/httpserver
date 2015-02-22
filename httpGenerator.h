@@ -27,6 +27,10 @@ int genHeader(struct HttpReplyHeader *hdr, char *hbuf, int hbuf_size) {
         snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpRetMsg_NOT_FOUND);
         pos += strlen(str_httpRetMsg_NOT_FOUND);
         break;
+    case FORBIDDEN:
+        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpRetMsg_FORBIDDEN);
+        pos += strlen(str_httpRetMsg_FORBIDDEN);
+        break;
     default:    
         return -1;
     }

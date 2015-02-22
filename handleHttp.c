@@ -6,6 +6,7 @@
 #include "httpGenerator.h"
 #include "httpParser.h"
 
+
 void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
     struct HttpReq req;
 	int fsize;
@@ -19,9 +20,14 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
         replyHeader.retMsg = BAD_REQUEST;
         replyHeader.contType = TEXT_HTML;
     } else {
+		//printf("file path: %s\n", req.reqLoc);
 		if ((fsize = fileExist(req.reqLoc)) == -1) {
 			replyHeader.retCode = 404;
 			replyHeader.retMsg = NOT_FOUND;
+			replyHeader.contType = TEXT_HTML;
+		} else if (fileReadable(req.reqLoc) == 0) {
+			replyHeader.retCode = 403;
+			replyHeader.retMsg = FORBIDDEN;
 			replyHeader.contType = TEXT_HTML;
 		} else {
 			replyHeader.retCode = 200;
@@ -37,8 +43,9 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
 		perror("head_size error\n");
         return;
     }
-    const char file_400[] = "<html><body>bad request</body></html>";
-    const char file_404[] = "<html><body>request file not found</body></html>";
+    const char file_400[] = "<html><body>Bad Request</body></html>";
+    const char file_403[] = "<html><body>403 Forbidden</body></html>";
+    const char file_404[] = "<html><body>Request File Not Found</body></html>";
     switch (replyHeader.retCode) {
     case 400:
         *msg_size = head_size + sizeof file_400;
@@ -46,6 +53,12 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
         memcpy(*msg_ptr, hbuf, head_size);
         memcpy(*msg_ptr+head_size, file_400, sizeof file_400);
 		break;
+	case 403:
+        *msg_size = head_size + sizeof file_403;
+        *msg_ptr = (char*) malloc(*msg_size);
+        memcpy(*msg_ptr, hbuf, head_size);
+        memcpy(*msg_ptr+head_size, file_403, sizeof file_403);
+        break;
     case 404:
         *msg_size = head_size + sizeof file_404;
         *msg_ptr = (char*) malloc(*msg_size);
@@ -56,7 +69,6 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
         *msg_size = head_size + fsize;
         *msg_ptr = (char*) malloc(*msg_size);
         memcpy(*msg_ptr, hbuf, head_size);
-
         if (loadFile(*msg_ptr+head_size, req.reqLoc, fsize) == -1) {
 			perror("load file error\n");
         }

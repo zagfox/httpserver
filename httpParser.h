@@ -1,8 +1,32 @@
 #include <stdio.h>
 #include <memory.h>
+#include <string.h>
+
 #include "format.h"
 
+/* 
+ * return 1 if file escape home
+ * return 0 if not
+ */
+int fileEscapeHome(char path[], int size) {
+	int i, cnt = 0;
+	char *token;
+	token = strtok(path, "/");
+	while (token != NULL) {
+		cnt++;
+		if (strcmp(token, "..") == 0) {
+			cnt -= 2;
+		}
+		if (cnt < 0) {
+			return 1;
+		}
+		token = strtok(NULL, "/");
+	}
+	return 0;
+}
+
 void getFileNameType(char path[], int size, struct HttpReq *req) {
+	//printf("size %d, path %s\n", size, path);
     if (size == 1 && path[0] == '/') {
         snprintf(req->reqLoc, (sizeof home) + (sizeof index), "%s%s", home, index);
     } else {
@@ -44,8 +68,10 @@ int parseHttpReq(char *buf, int size, struct HttpReq *req) {
     memset(req->reqLoc, 0, sizeof(req->reqLoc));
 
 	getFileNameType(buf+start, end-start, req);
-	//printf("s %d, e %d\n", start, end);
-	//printf("file name:%s\n", req->reqLoc);
+
+	if (fileEscapeHome(buf+start, end-start)) {
+		return -1;
+	}
 
     return 0;
 }
