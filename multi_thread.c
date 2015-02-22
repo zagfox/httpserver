@@ -2,20 +2,19 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <signal.h>
 #include <memory.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 
 #include <pthread.h>
 
-#include "handle_http.h"
+#include "http/handle_http.h"
 #include "format.h"
+#include "socket/socket_wrapper.c"
 
 void handle_http(void *arg) {
 	int csock = *(int*)arg;
+
 	char buf[BUFSIZ];
 	memset(buf, 0, BUFSIZ);
 	ssize_t bytes_read = 0;
@@ -41,11 +40,11 @@ void handle_http(void *arg) {
 		} 
 	}  
 	handleSent(&msg, &msg_size);
-	close(csock);
+	close_safe(csock);
 }
 
 void run_multi_thread(const struct config *cfg) {
-	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int sock = socket_safe(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
 	struct sockaddr_in address = {0};
 	address.sin_family = AF_INET;
@@ -55,34 +54,21 @@ void run_multi_thread(const struct config *cfg) {
 	int opt = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-	if (bind(sock, (struct sockaddr*) &address, sizeof(address)) < 0) {
-		perror("bind failed");
-		exit(1);
-	}
+	bind_safe(sock, (struct sockaddr*) &address, sizeof(address));
 
-	if (listen(sock, 128) < 0) {
-		perror("listen failed");
-		exit(1);
-	}
-
-	// handling zombie process
-	//signal(SIGCHLD, waitChildren);
-	signal(SIGCHLD, SIG_IGN);
+	listen_safe(sock, 128);
 
 	// hanlding request client socket
 	while (1) {
 		struct sockaddr_in client_address = {0};
 		socklen_t ca_len = 0;
 
-		int csock = accept(sock, (struct sockaddr*) &client_address, &ca_len);
-		if (csock < 0) {
-			perror("accept failed");
-			exit(1);
-		}
-
+		int *csock = malloc(sizeof(int));  //has memory leak
+		*csock = accept_safe(sock, (struct sockaddr*) &client_address, &ca_len);
+			
 		pthread_t thread_id;
-		pthread_create(&thread_id, NULL, (void*)&handle_http, (void*)&csock);
-		pthread_join(thread_id, NULL);
+		pthread_create(&thread_id, NULL, (void*)&handle_http, (void*)csock);
+		//pthread_join(thread_id, NULL);
 	}
-	close(sock);
+	close_safe(sock);
 }

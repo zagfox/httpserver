@@ -1,9 +1,14 @@
 CC=gcc
 FLAGS=-std=c99
 LIBS=-lpthread
+INCLUDE=-I./
 
-all:
-	${CC} ${FLAGS} handle_http.c server.c ${LIBS}
+all: handle_http.o
+	${CC} ${FLAGS} ${INCLUDE} handle_http.o server.c ${LIBS} -o server
+
+handle_http.o: 
+	${CC} ${FLAGS} ${INCLUDE} -c http/handle_http.c 
 
 clean:
-	rm a.out
+	rm *.o
+	rm server

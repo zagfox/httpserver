@@ -26,9 +26,12 @@ int fileExist(char fname[]) {
  * return 0, not readable
  */
 int fileReadable(char fname[]) {
-    if (NULL == fopen(fname, "r")) {
+	FILE *file;
+    if (NULL == (file = fopen(fname, "r"))) {
+		//should be ok, file should not be opened
 		return 0;
 	}
+	fclose(file);
 	return 1;
 }
 

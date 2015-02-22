@@ -5,10 +5,10 @@
 #include <memory.h>
 
 #include "format.h"
-#include "fileIO.c"
-#include "httpGenerator.h"
-#include "httpParser.h"
+#include "http/httpGenerator.h"
+#include "http/httpParser.h"
 
+#include "io/fileIO.c"
 
 void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
     struct HttpReq req;
