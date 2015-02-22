@@ -1,17 +1,15 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 
 #include <signal.h>
-#include <sys/wait.h>
+#include <memory.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "handleHttp.c"
-
+#include "handle_http.h"
 #include "format.h"
 
 void run_multi_proc(const struct config *cfg) {

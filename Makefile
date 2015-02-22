@@ -1,9 +1,9 @@
 CC=gcc
-FLAGS="-std=c99"
+FLAGS=-std=c99
+LIBS=-lpthread
 
 all:
-	${CC} ${FLAGS} server.c
-dbg:
-	${CC} ${FLAGS} -g server.c
+	${CC} ${FLAGS} handle_http.c server.c ${LIBS}
+
 clean:
 	rm a.out

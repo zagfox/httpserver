@@ -34,7 +34,7 @@ int getFileName(char path[], int size, struct HttpReq *req) {
 	snprintf(req->reqLoc, (sizeof home) + size, "%s%s", home, path);
 	int pos = (sizeof home) + size;
     if (path[size-1] == '/') {
-        snprintf(req->reqLoc+pos-1, (sizeof index), "%s", index);
+        snprintf(req->reqLoc+pos-1, (sizeof index_html), "%s", index_html);
     } 
 
 
@@ -65,7 +65,8 @@ int getFileType(struct HttpReq *req) {
 int parseHttpReq(char *buf, int size, struct HttpReq *req) {
     //native implementation
     int start = 0, end = 0;
-    for (int i = 0; i < size; i++) {
+	int i;
+    for (i = 0; i < size; i++) {
         if (i == 0) {
             if (buf[0] == 'G') {
                 req->reqType = GET;

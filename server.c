@@ -6,6 +6,7 @@
 #include <getopt.h>
 
 #include "multi_proc.c"
+#include "multi_thread.c"
 
 
 struct option longopts[] = {
@@ -57,6 +58,9 @@ int main(int argc, char *argv[]) {
 	switch (cfg.mode) {
 	case 1:
 		run_multi_proc(&cfg);
+		break;
+	case 2:
+		run_multi_thread(&cfg);
 		break;
 	default:
 		perror("mode error");

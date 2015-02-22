@@ -1,3 +1,6 @@
+#include "handle_http.h"
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
 

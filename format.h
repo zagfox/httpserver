@@ -29,20 +29,20 @@ struct HttpReplyHeader {
 };
 
 /* string */
-char str_httpVersion_v1_1[] = "HTTP/1.1";
+const static char str_httpVersion_v1_1[] = "HTTP/1.1";
 
-char str_httpRetMsg_OK[] = "200 OK\r\n";
-char str_httpRetMsg_BAD_REQUEST[] = "400 Bad Request\r\n";
-char str_httpRetMsg_NOT_FOUND[] = "404 Not Found\r\n";
-char str_httpRetMsg_FORBIDDEN[] = "403 Forbidden\r\n";
+const static char str_httpRetMsg_OK[] = "200 OK\r\n";
+const static char str_httpRetMsg_BAD_REQUEST[] = "400 Bad Request\r\n";
+const static char str_httpRetMsg_NOT_FOUND[] = "404 Not Found\r\n";
+const static char str_httpRetMsg_FORBIDDEN[] = "403 Forbidden\r\n";
 
-char str_httpContType_TEXT_HTML[] = "Content-Type: text/html\r\n";
-char str_httpContType_IMG_JPEG[] = "Content-Type: img/jpeg\r\n";
-char str_httpContType_IMG_PNG[] = "Content-Type: img/png\r\n";
+const static char str_httpContType_TEXT_HTML[] = "Content-Type: text/html\r\n";
+const static char str_httpContType_IMG_JPEG[] = "Content-Type: img/jpeg\r\n";
+const static char str_httpContType_IMG_PNG[] = "Content-Type: img/png\r\n";
 
 /* related to file parser */
-const char home[] = "/home/zagfox/cse124/web";
-const char index[] = "index.html";
+const static char home[] = "/home/zagfox/cse124/web";
+const static char index_html[] = "index.html";
 
 #endif /*FORMAT_H*/
 
