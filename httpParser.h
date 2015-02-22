@@ -25,18 +25,38 @@ int fileEscapeHome(char path[], int size) {
 	return 0;
 }
 
-void getFileNameType(char path[], int size, struct HttpReq *req) {
+int getFileName(char path[], int size, struct HttpReq *req) {
 	//printf("size %d, path %s\n", size, path);
-    if (size == 1 && path[0] == '/') {
-        snprintf(req->reqLoc, (sizeof home) + (sizeof index), "%s%s", home, index);
-    } else {
-        snprintf(req->reqLoc, (sizeof home) + size, "%s%s", home, path);
-    }
-	req->contType = TEXT_HTML;
-	if (size >= 4) {
-	  	if (strncmp(".jpg", path+size-4, 4) == 0) 
-			req->contType = IMG_JPEG;
+	if (size < 1 || path[0] != '/') {
+		return -1;
 	}
+
+	snprintf(req->reqLoc, (sizeof home) + size, "%s%s", home, path);
+	int pos = (sizeof home) + size;
+    if (path[size-1] == '/') {
+        snprintf(req->reqLoc+pos-1, (sizeof index), "%s", index);
+    } 
+
+
+	return 0;
+}
+
+int getFileType(struct HttpReq *req) {
+
+	req->contType = TEXT_HTML;
+	int size = strlen(req->reqLoc);
+	if (size >= 4) {
+	  	if (strncmp(".jpg", req->reqLoc+size-4, 4) == 0) 
+			req->contType = IMG_JPEG;
+		else if (strncmp(".png", req->reqLoc+size-4, 4) == 0)	
+			req->contType = IMG_PNG;
+		else 
+			return -1;	
+	}
+
+	return 0;
+
+
 }
 
 /*
@@ -67,7 +87,9 @@ int parseHttpReq(char *buf, int size, struct HttpReq *req) {
     }
     memset(req->reqLoc, 0, sizeof(req->reqLoc));
 
-	getFileNameType(buf+start, end-start, req);
+	if (getFileName(buf+start, end-start, req) == -1) {
+		return -1;
+	}
 
 	if (fileEscapeHome(buf+start, end-start)) {
 		return -1;

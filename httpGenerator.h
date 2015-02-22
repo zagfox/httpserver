@@ -44,6 +44,10 @@ int genHeader(struct HttpReplyHeader *hdr, char *hbuf, int hbuf_size) {
         snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpContType_IMG_JPEG);
         pos += strlen(str_httpContType_IMG_JPEG);
         break;
+    case IMG_PNG:
+        snprintf(hbuf+pos, hbuf_size-pos, "%s", str_httpContType_IMG_PNG);
+        pos += strlen(str_httpContType_IMG_PNG);
+        break;
     default:    
         return -1;
     }

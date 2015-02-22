@@ -12,7 +12,7 @@ struct config {
 typedef enum {GET} httpReqType;
 typedef enum {v1_1} httpVersion;
 typedef enum {OK, BAD_REQUEST, NOT_FOUND, FORBIDDEN}   httpRetMsg;
-typedef enum {TEXT_HTML, IMG_JPEG} httpContType;
+typedef enum {TEXT_HTML, IMG_JPEG, IMG_PNG} httpContType;
 
 /* struct */
 struct HttpReq {
@@ -38,10 +38,11 @@ char str_httpRetMsg_FORBIDDEN[] = "403 Forbidden\r\n";
 
 char str_httpContType_TEXT_HTML[] = "Content-Type: text/html\r\n";
 char str_httpContType_IMG_JPEG[] = "Content-Type: img/jpeg\r\n";
+char str_httpContType_IMG_PNG[] = "Content-Type: img/png\r\n";
 
 /* related to file parser */
 const char home[] = "/home/zagfox/cse124/web";
-const char index[] = "/index.html";
+const char index[] = "index.html";
 
 #endif /*FORMAT_H*/
 
