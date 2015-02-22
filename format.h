@@ -3,6 +3,11 @@
 
 #include <stdio.h>
 
+struct config {
+	int mode;
+	int port;
+};
+
 /* several enum */
 typedef enum {GET} httpReqType;
 typedef enum {v1_1} httpVersion;

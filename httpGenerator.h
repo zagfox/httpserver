@@ -1,3 +1,4 @@
+
 #include "format.h"
 
 int genHeader(struct HttpReplyHeader *hdr, char *hbuf, int hbuf_size) {

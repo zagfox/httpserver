@@ -1,3 +1,6 @@
+#ifndef FILEIO_H
+#define FILEIO_H
+
 #include <stdio.h>
 #include <sys/stat.h>
 
@@ -25,3 +28,5 @@ int loadFile(void *dst, char fname[], int fsize) {
     }
     return -1;
 }
+
+#endif /*FILEIO_H*/
