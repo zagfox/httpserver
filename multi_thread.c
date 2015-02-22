@@ -2,45 +2,49 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include <memory.h>
-
 #include <sys/types.h>
-
+#include <memory.h>
 #include <pthread.h>
 
-#include "http/handle_http.h"
 #include "format.h"
+#include "http/handle_http.h"
 #include "socket/socket_wrapper.c"
 
+#define THREADS_NUM 4
+
 void handle_http(void *arg) {
-	int csock = *(int*)arg;
+	int sock = *(int*)arg;
+	while (1) {
+		struct sockaddr_in client_address = {0};
+		socklen_t ca_len = 0;
 
-	char buf[BUFSIZ];
-	memset(buf, 0, BUFSIZ);
-	ssize_t bytes_read = 0;
-	ssize_t bytes_sent = 0;
-	char *msg = 0;
-	int msg_size = 0;
+		int csock = accept_safe(sock, (struct sockaddr*) &client_address, &ca_len);
 
-	bytes_read = recv(csock, &buf, sizeof(buf)-1, 0);
-	if (bytes_read < 0) {
-		perror("recv failed");
-		exit(1);
-	} 
+		char buf[BUFSIZ];
+		memset(buf, 0, BUFSIZ);
+		ssize_t bytes_read = 0;
+		ssize_t bytes_sent = 0;
+		char *msg = 0;
+		int msg_size = 0;
 
-	//printf("bytes_read: %lu | %s\n", bytes_read, buf);
-	handleRecv(buf, bytes_read, &msg, &msg_size);
-
-	if (msg_size != 0) {
-		bytes_sent = send(csock, msg, msg_size, 0);
-		//printf("data send: %lu %d | %s\n", bytes_sent, msg_size, msg);
-
-		if (bytes_sent < 0) {
-			perror("sent failed");
+		bytes_read = read_safe(csock, &buf, sizeof(buf)-1);
+		if (bytes_read < 0) {
+			perror("recv failed");
+			exit(1);
 		} 
-	}  
-	handleSent(&msg, &msg_size);
-	close_safe(csock);
+
+		handleRecv(buf, bytes_read, &msg, &msg_size);
+
+		if (msg_size != 0) {
+			bytes_sent = write_safe(csock, msg, msg_size);
+			if (bytes_sent < 0) {
+				perror("sent failed");
+			}
+		}
+
+		handleSent(&msg, &msg_size);
+		close_safe(csock);
+	}
 }
 
 void run_multi_thread(const struct config *cfg) {
@@ -59,16 +63,15 @@ void run_multi_thread(const struct config *cfg) {
 	listen_safe(sock, 128);
 
 	// hanlding request client socket
-	while (1) {
-		struct sockaddr_in client_address = {0};
-		socklen_t ca_len = 0;
-
-		int *csock = malloc(sizeof(int));  //has memory leak
-		*csock = accept_safe(sock, (struct sockaddr*) &client_address, &ca_len);
-			
-		pthread_t thread_id;
-		pthread_create(&thread_id, NULL, (void*)&handle_http, (void*)csock);
-		//pthread_join(thread_id, NULL);
+	pthread_t threads[THREADS_NUM];
+	int i;
+	for (i = 0; i < THREADS_NUM; ++i) {
+		pthread_create(&threads[i], NULL, (void*)&handle_http, (void*)&sock);
 	}
+
+	for (i = 0; i < THREADS_NUM; ++i) {
+		pthread_join(threads[i], NULL);
+	}
+
 	close_safe(sock);
 }
