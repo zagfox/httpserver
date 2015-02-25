@@ -11,8 +11,40 @@ struct config {
 /* several enum */
 typedef enum {GET} httpReqType;
 typedef enum {v1_1} httpVersion;
-typedef enum {OK, BAD_REQUEST, NOT_FOUND, FORBIDDEN}   httpRetMsg;
-typedef enum {TEXT_HTML, IMG_JPEG, IMG_PNG} httpContType;
+
+// http ret code
+typedef enum {
+	CODE_200 = 0,
+	CODE_400 = 1,
+	CODE_403 = 2,
+	CODE_404 = 3
+} httpRetCode;
+
+const static char* httpRetMsg[4] = {
+	"200 OK\r\n",
+	"400 Bad Request\r\n",
+	"403 Forbidden\r\n",
+	"404 Not Found\r\n"
+};
+
+const static char* httpFile[4] = {
+	"!!!should not be used!!!",
+	"<html><body>Bad Request</body></html>",
+	"<html><body>403 Forbidden</body></html>",
+	"<html><body>Request File Not Found</body></html>"
+};
+
+typedef enum {
+	TEXT_HTML = 0, 
+	IMG_JPEG  = 1,
+	IMG_PNG   = 2
+} httpContType;
+
+const static char* str_httpContType[3] = {
+	"Content-Type: text/html\r\n",
+	"Content-Type: img/jpeg\r\n",
+	"Content-Type: img/png\r\n"
+};
 
 /* struct */
 struct HttpReq {
@@ -23,26 +55,15 @@ struct HttpReq {
 
 struct HttpReplyHeader {
     httpVersion version;
-    int retCode;
-    httpRetMsg retMsg;
+	httpRetCode retCode;
     httpContType contType;
 };
 
 /* string */
 const static char str_httpVersion_v1_1[] = "HTTP/1.1";
 
-const static char str_httpRetMsg_OK[] = "200 OK\r\n";
-const static char str_httpRetMsg_BAD_REQUEST[] = "400 Bad Request\r\n";
-const static char str_httpRetMsg_NOT_FOUND[] = "404 Not Found\r\n";
-const static char str_httpRetMsg_FORBIDDEN[] = "403 Forbidden\r\n";
-
-const static char str_httpContType_TEXT_HTML[] = "Content-Type: text/html\r\n";
-const static char str_httpContType_IMG_JPEG[] = "Content-Type: img/jpeg\r\n";
-const static char str_httpContType_IMG_PNG[] = "Content-Type: img/png\r\n";
-
 /* related to file parser */
 const static char home[] = "/home/zagfox/cse124/web";
 const static char index_html[] = "index.html";
 
 #endif /*FORMAT_H*/
-

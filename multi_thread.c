@@ -24,7 +24,7 @@ void handle_http(void *arg) {
 		memset(buf, 0, BUFSIZ);
 		ssize_t bytes_read = 0;
 		ssize_t bytes_sent = 0;
-		char *msg = 0;
+		char *msg = NULL;
 		int msg_size = 0;
 
 		bytes_read = read_safe(csock, &buf, sizeof(buf)-1);
@@ -63,6 +63,8 @@ void run_multi_thread(const struct config *cfg) {
 	listen_safe(sock, 128);
 
 	// hanlding request client socket
+	//fork();
+	//fork();
 	pthread_t threads[THREADS_NUM];
 	int i;
 	for (i = 0; i < THREADS_NUM; ++i) {

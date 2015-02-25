@@ -19,56 +19,33 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
 
     if (parseHttpReq(buf, size, &req) == -1) {
 		printf("badrequest: %s %d\n", buf, size);
-        replyHeader.retCode = 400;
-        replyHeader.retMsg = BAD_REQUEST;
+        replyHeader.retCode = CODE_400;
         replyHeader.contType = TEXT_HTML;
     } else {
-		//printf("file path: %s\n", req.reqLoc);
 		if ((fsize = fileExist(req.reqLoc)) == -1) {
-			replyHeader.retCode = 404;
-			replyHeader.retMsg = NOT_FOUND;
+			replyHeader.retCode = CODE_404;
 			replyHeader.contType = TEXT_HTML;
 		} else if (fileReadable(req.reqLoc) == 0) {
-			replyHeader.retCode = 403;
-			replyHeader.retMsg = FORBIDDEN;
+			replyHeader.retCode = CODE_403;
 			replyHeader.contType = TEXT_HTML;
 		} else {
-			replyHeader.retCode = 200;
-			replyHeader.retMsg = OK;
+			replyHeader.retCode = CODE_200;
 			replyHeader.contType = req.contType;
 		}
 	}
 
     char hbuf[1024];
     int head_size = genHeader(&replyHeader, hbuf, sizeof hbuf);
-    //printf("header is: %d | %shaha\n", head_size, hbuf);
     if (head_size == -1) {
 		perror("head_size error\n");
         return;
     }
-    const char file_400[] = "<html><body>Bad Request</body></html>";
-    const char file_403[] = "<html><body>403 Forbidden</body></html>";
-    const char file_404[] = "<html><body>Request File Not Found</body></html>";
-    switch (replyHeader.retCode) {
-    case 400:
-        *msg_size = head_size + sizeof file_400;
-        *msg_ptr = (char*) malloc(*msg_size);
-        memcpy(*msg_ptr, hbuf, head_size);
-        memcpy(*msg_ptr+head_size, file_400, sizeof file_400);
-		break;
-	case 403:
-        *msg_size = head_size + sizeof file_403;
-        *msg_ptr = (char*) malloc(*msg_size);
-        memcpy(*msg_ptr, hbuf, head_size);
-        memcpy(*msg_ptr+head_size, file_403, sizeof file_403);
-        break;
-    case 404:
-        *msg_size = head_size + sizeof file_404;
-        *msg_ptr = (char*) malloc(*msg_size);
-        memcpy(*msg_ptr, hbuf, head_size);
-        memcpy(*msg_ptr+head_size, file_404, sizeof file_404);
-        break;
-    case 200:    
+
+	int code = replyHeader.retCode;
+	if (code < 0 || code > 3)
+		return;
+    switch (code) {
+    case CODE_200:
         *msg_size = head_size + fsize;
         *msg_ptr = (char*) malloc(*msg_size);
         memcpy(*msg_ptr, hbuf, head_size);
@@ -77,6 +54,10 @@ void handleRecv(char *buf, int size, char **msg_ptr, int* msg_size) {
         }
         break;
     default:
+        *msg_size = head_size + sizeof(httpFile[code]);
+        *msg_ptr = (char*) malloc(*msg_size);
+        memcpy(*msg_ptr, hbuf, head_size);
+        memcpy(*msg_ptr+head_size, httpFfile[code], sizeof(httpFile[code]));
         break;
     }
 }
